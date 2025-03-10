@@ -49,12 +49,33 @@ app.get("/html",(req,res)=>{
 });
 
 //when this valid routes is not define when enter the worng path give error 400 page not found
-app.get("*",(req,res)=>{
-    res.send("this path is not vaild");
-});
+// app.get("*",(req,res)=>{
+//     res.send("this path is not vaild");
+// });
 
 app.post("/",(req,res)=>{
     res.send("you conncted root for post method");
 });
 
-//read about routing get and post method
+/*Nodemon 
+To automatically restart server with code changes
+npm i -g nodemon
+nodemon index.js*/
+
+/*Path Parameters */
+app.get("/:username/:id",(req,res)=>{
+    let {username,id}=req.params;
+    let page = `<h1>Welcome to @${username}</h1><br>
+    <button>Logout</button>`
+    res.send(page);
+});
+
+/*Query Strings*/
+app.get("/search",(req,res)=>{
+    let {q} = req.query;
+    //query does'nt exist
+    if(!q){
+        res.send(`<h1>Nothing Search</h1>`);
+    }
+    res.send(`<h1>search results for query :${q}</h1>`);
+})
