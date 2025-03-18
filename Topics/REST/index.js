@@ -1,70 +1,73 @@
-/*Express Server Confguration*/
 const express = require("express");
 const app = express();
 const port = 3000;
-
-//uderstand the enconded data
-app.use(express.urlencoded({ extends: true }));
 const path = require("path");
+const { v4: uuidv4 } = require("uuid");
+const methodOverride = require("method-override");
+
+
+
+// Middleware to parse JSON and URL-encoded form data
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json()); //Added this to parse JSON requests
+
+// Set up EJS and static files
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
-
-//using to link public to apply css
 app.use(express.static(path.join(__dirname, "public")));
 
-/*Index Route*/
+//override with Post  having ?_method=DELETE
+app.use(methodOverride("_method"));
+
+// Sample Posts Data
 let posts = [
-  
-  {
-    id: "1a", //Implement: GET/posts/:id 
-    username: "Shahnawaz",
-    content: "I love coding",
-  },
-  {
-    id: "2b",
-    username: "Irfan",
-    content: "Nothing to do",
-  },
-  {
-    id:"3c",
-    username: "Irfan",
-    content: "I got everthing",
-  },
+  { id: uuidv4(), username: "Shahnawaz", content: "I love coding" },
+  { id: uuidv4(), username: "Irfan", content: "Nothing to do" },
+  { id: uuidv4(), username: "Irfan", content: "I got everything" },
 ];
 
-app.get("/posts", (req, res) => {
-  res.render("index.ejs", { posts });
-});
+// Routes - Main
+app.get("/posts", (req, res) => res.render("index.ejs", { posts }));
 
-/*Create & New Route - Implement:POST:posts
-Cetate Route POST /posts to add a new post
-
-2 routes 
-.serve the from  GET  /posts/new
-.Add the new post POST / posts
-*/
-
-app.get("/posts/new", (req, res) => {
-  res.render("new.ejs");
-});
-
+//Routes - new posts
+app.get("/posts/new", (req, res) => res.render("new.ejs"));
 app.post("/posts", (req, res) => {
   let { username, content } = req.body;
-  posts.push({ username, content });
-  /*Redirect - res.redirect(URL) */
+  let id = uuidv4();
+  posts.push({ id, username, content });
   res.redirect("/posts");
 });
 
-/*Implement: GET/posts/:id - Show Route
-GET /posts/:id  - to get one post (using id) */
-
+//Routes - view Posts
 app.get("/posts/:id", (req, res) => {
-  let {id} = req.params;
-  //find the posts using of id
-  let post = posts.find((p)=> id  === p.id);
-  res.render("show.ejs",{post});
-  res.send("request working");
+  let { id } = req.params;
+  let post = posts.find((p) => p.id === id);
+  res.render("show.ejs", { post });
 });
-app.listen(port, () => {
-  console.log(`Listening ON PORT : ${port}`);
+
+
+//Routes - Edit Post
+app.patch("/posts/:id", (req, res) => {
+  let { id } = req.params;
+  let post = posts.find((p) => id === p.id);
+  post.content = req.body.content;
+  res.redirect("/posts");
 });
+
+app.get("/posts/:id/edit",(req,res)=>{
+  let {id } = req.params;
+  let post = posts.find((p) => id === p.id);
+  res.render("edit.ejs",{post});
+});
+
+//Destroy Route
+app.delete("/posts/:id",(req,res)=>{
+  let {id}= req.params;
+  posts = posts.filter((p) => id !== p.id);
+  res.redirect('/posts');
+});
+
+// Start Server
+app.listen(port, () => console.log(`Listening on PORT: ${port}`));
+
+//8.15
