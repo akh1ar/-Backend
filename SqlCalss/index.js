@@ -23,12 +23,18 @@ const connection = mysql.createConnection({
   password: '9955',
 });
 
-// A simple SHOW query
+// Inser into user
 let q = "SHOW TABLES";
 let q1 ="INSERT INTO user (id, username, email, password) VALUES (?, ?, ?, ?)";
 let user = ["123","123_newuser","new@gmail.com","123"];
+
+let multiquery = "INSERT INTO user (id, username, email, password) VALUES ?";
+let users = [["123a","123_newuser_a","new@gmail.com_a","123a"],
+             ["123b","123_newuser_b","new@gmail.com_b","123b"],
+             ["123c","123_newuser_c","new@gmail.com_c","123c"]
+            ];
 try{
-  connection.query(q1, user, (err,result)=>{
+  connection.query(multiquery, [users], (err,result)=>{
   if(err)throw err;
   console.log(result);
   console.log(result.length);
