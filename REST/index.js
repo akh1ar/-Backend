@@ -68,6 +68,6 @@ app.delete("/posts/:id",(req,res)=>{
 });
 
 // Start Server
-app.listen(port, () => console.log(`Listening on PORT: ${port}`));
+app.listen(port, () => console.log(`🔥Listening on PORT: ${port}`));
 
 //8.15
