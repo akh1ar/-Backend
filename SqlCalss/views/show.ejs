@@ -1,38 +1,138 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Show User</title>
-    <style>
-        table,
-        th,
-        td {
-            border: 1px solid #000;
-        }
-    </style>
-</head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Show User</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f6f9;
+    }
 
+    #main {
+      display: flex;
+      height: 100vh;
+    }
+    .left {
+      width: 30%;
+      background: #2c3e50;
+      color: white;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 2px 0 5px rgba(0,0,0,0.2);
+    }
+
+    .left h1 {
+      font-size: 22px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .left button {
+      padding: 10px 20px;
+      background: #1abc9c;
+      border: none;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    .left button:hover {
+      background: #16a085;
+    }
+    .right {
+      width: 70%;
+      padding: 20px;
+      overflow-y: auto;
+      background: white;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: left;
+    }
+
+    th {
+      background: #3498db;
+      color: white;
+    }
+
+    tr:nth-child(even) {
+      background: #f9f9f9;
+    }
+
+    tr:hover {
+      background: #f1f1f1;
+    }
+
+    button {
+      background: #2980b9;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      cursor: pointer;
+      border-radius: 4px;
+      margin-right: 5px;
+    }
+
+    button:hover {
+      background: #1f6391;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 5px;
+    }
+  </style>
+</head>
 <body>
-    <table>
+  <div id="main">
+    <div class="left">
+      <h1>Welcome to User Dashboard</h1>
+      <form method="GET" action="/user/add">
+        <button>Join Now</button>
+      </form>
+    </div>
+    <div class="right">
+      <h2>User List</h2>
+      <table>
         <tr>
-            <th>Id</th>
-            <th>Email</th>
-            <th>Username</th>
+          <th>Id</th>
+          <th>Email</th>
+          <th>Username</th>
+          <th>Actions</th>
         </tr>
-        <%for( user of users){ %>
-            <tr>
-                <td><%=user.id%></td>
-                <td><%=user.email%></td>
-                <td><%=user.username%></td>
-                <td>
-                    <form method="GET" action="/user/<%=user.id%>/edit">
-                    <button>Edit Username</button>
-                    </form>
-                </td>
-            </tr>
-        <%}%>
-    </table>
+        <% for (let user of users) { %>
+        <tr>
+          <td><%= user.id %></td>
+          <td><%= user.email %></td>
+          <td><%= user.username %></td>
+          <td>
+            <div class="action-buttons">
+              <form method="GET" action="/user/<%= user.id %>/edit">
+                <button>Edit</button>
+              </form>
+              <form method="GET" action="/user/<%= user.id %>/del">
+                <button>Delete</button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        <% } %>
+      </table>
+    </div>
+  </div>
 </body>
 </html>

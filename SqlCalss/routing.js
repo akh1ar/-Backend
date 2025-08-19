@@ -2,6 +2,7 @@ const express = require("express");
 const mysql = require("mysql2");
 const app = express();
 const path = require("path");
+const { faker } = require('@faker-js/faker');
 const methodOverride = require("method-override");
 
 
@@ -14,6 +15,11 @@ app.set("view engine", "ejs");
 app.set("views",path.join(__dirname,"/views"));
 const port = 3000;
 
+let getRandomUser = ()=> {
+  return {
+    userId: faker.string.uuid(),
+  };
+}
  
 
 // Create the connection to database
@@ -93,6 +99,59 @@ app.patch("/user/:id",(req,res)=>{
     console.log(err);
     res.send("SOME ERR HERE");
   }
+});
+app.get("/user/:id/del",(req,res)=>{
+  let {id} = req.params;
+  let q = `SELECT * FROM user WHERE id ='${id}'`;
+  try{
+    connection.query(q,(err,result)=>{
+      if(err) throw err;
+      let user = result[0];
+      res.render("del.ejs", { user });
+    });
+  }catch(err){
+    console.log(err);
+    res.send("SOME ERR HERE");
+  }
+});
+app.delete("/user/:id",(req,res)=>{
+  let {id} = req.params;
+  let {password : formPass, username: newUsername} = req.body;
+  let q = `SELECT * FROM user WHERE id ='${id}'`;
+  try{
+    connection.query(q,(err,result)=>{
+      if(err) throw err;
+      let user = result[0];
+      if(formPass != user.password){
+        res.send("worng password");
+      }else{
+        let q2 = `DELETE FROM user WHERE id='${id}'`;
+        connection.query(q2,(err,result)=>{
+          if(err) throw err;
+          res.redirect("/users");
+        });
+      }
+    });
+  }catch(err){
+    console.log(err);
+    res.send("SOME ERR HERE");
+  }
+});
+app.get("/user/add", (req, res) => {
+  res.render("add.ejs");
+});
+
+app.post("/user", (req, res) => {
+  let { username, email, password } = req.body;
+  let userId = faker.string.uuid();
+  let q = `INSERT INTO user (id, username, email, password) VALUES (?, ?, ?, ?)`;
+  connection.query(q, [userId, username, email, password], (err, result) => {
+    if (err) {
+      console.error(err);
+      return res.send("Error adding user");
+    }
+    res.redirect("/users");
+  });
 });
 //start the Server
 app.listen(port, () => {
