@@ -9,7 +9,6 @@
 <body>
     <h3>All Chats!</h3>
     <form method="GET" action="/chats/new">
-        
         <button>New Chat</button>
     </form>
     <br/>
@@ -18,12 +17,19 @@
         <p>Form: <%=chat.form%></p>
         <div class="msg">
             <p><%=chat.msg%></p>
+            <form method="GET" action="/chats/<%=chat._id%>/edit">
+                <button>Edit</button>
+            </form>
+            <br/>
+            <form method="POST" action="/chats/<%=chat._id%>?_method=DELETE">
+                <button>Delete</button>
+            </form>
         </div>
         <p>Recevied by: <%=chat.to%></p>
         <hr/>
         <p>
             <%=chat.created_at.toString().split(" ")[4]%>
-                 
+              <br/>   
             <%=chat.created_at.toString().split(" ").slice(0,4).join("-")%>
         </p>
     </div>

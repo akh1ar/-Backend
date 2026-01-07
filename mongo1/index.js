@@ -3,10 +3,13 @@ const app = express();
 const path = require("path");
 const mongoose = require("mongoose");
 const Chat = require("./models/chat.js");
+const methodOverride = require("method-override");
 
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 app.use(express.static(path.join(__dirname,"public")));
+app.use(methodOverride("_method"));
+
 //parsh the data to get url (req.body)
 app.use(express.urlencoded({extended:true}));
 main()
@@ -42,6 +45,31 @@ app.post("/chats",(req,res)=>{
     .catch((err)=>{
         console
     })
+    res.redirect("/chats");
+});
+//edit route
+app.get("/chats/:id/edit",async(req,res)=>{
+    let {id}= req.params;
+    let chat = await Chat.findById(id);
+    res.render("edit.ejs",{chat});
+});
+//Update route
+app.put("/chats/:id",async(req,res)=>{
+    let {id}= req.params;
+    let {msg: newMsg}= req.body;
+    let uChat = await Chat.findByIdAndUpdate(
+        id, 
+        {msg: newMsg},
+        {runValidators: true, new: true}
+    );
+    console.log(uChat);
+    res.redirect("/chats");
+});
+//Destroy Route
+app.delete("/chats/:id",async (req,res)=>{
+    let {id}= req.params;
+    let Dchat = await Chat.findByIdAndDelete(id);
+    console.log(Dchat);
     res.redirect("/chats");
 });
 app.get("/",(req,res)=>{
